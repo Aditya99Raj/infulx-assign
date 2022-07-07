@@ -25,12 +25,13 @@ router.post("/order", async (req, res) => {
           .status(400)
           .send({ message: "item not found" });
 
-         const unitPrice = Code.price;
-         const totalAmt = req.body.qty * unitPrice
+         var unitPrice = Code.price;
+         var totalAmt = req.body.qty * unitPrice
 
         const Cart = await useCart.create(req.body,{$isNew:true})
-
-        return res.status(200).send({...Cart,unitPrice,totalAmt});
+        const data = {...Cart,unitPrice,totalAmt}
+        
+        return res.status(200).send(data);
 
     }catch (error) {
         return res.status(500).send(error.message);
@@ -43,10 +44,8 @@ router.get("/order/summarize", async (req, res) => {
 
     try {
         const cartSum = await useCart.find().lean().exec();
-        const Code = await itemMaster.findOne({ code:req.body.code});
-        const unitPrice = Code.price;
-        const totalAmt = req.body.qty * unitPrice
-        return res.status(200).send(cartSum,unitPrice,totalAmt);
+        
+        return res.status(200).send(cartSum);
 
     } catch (error) {
         return res.status(500).send(error.message);
